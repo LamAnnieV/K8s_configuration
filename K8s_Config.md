@@ -79,33 +79,7 @@ kubectl apply \
 
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
 
-### Retrieves information about the deployment named "aws-load-balancer-controller" in the "kube-system" namespace in a Kubernetes cluster, providing details on the current state and configuration of the AWS Load Balancer Controller.
-'kubectl get deployment -n kube-system aws-load-balancer-controller
-
 ### Configured ALB controller:
-•	Configure the Kubernetes ingressclass.yaml file to our cluster by running: ```kubectl apply -f v2_4_5_full.yaml```
-
-•	Lasty, I ran: ```kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller/crds"``` to apply Kubernetes resources that we download from an ingressclass.yaml file with pre-configured resource definitions so that AWS can manage the resources necessary to run the ALB efficiently.
-
-
-
-
-
-
-
-
-
-
-
-
-
-wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
-
-Edit the file that was downloaded v2_4_5_full.yaml (replace {cluster-name=your-cluster-name} with your cluster name ) on line around line 735
-
-aws eks --region us-east-1 update-kubeconfig --name cluster01
-
-kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
 
 kubectl get deployment -n kube-system aws-load-balancer-controller
 
