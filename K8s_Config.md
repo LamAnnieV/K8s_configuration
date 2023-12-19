@@ -1,4 +1,4 @@
-# How to Configure EKS Cluster
+# How to Configure EKS
 
 In the Jenkins Agent - Kubernetes:
 
