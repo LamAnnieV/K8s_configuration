@@ -26,15 +26,35 @@ eksctl create nodegroup --cluster cluster01 --node-private-networking --node-typ
 
 Add the following tags to each of the public subnets  "kubernetes.io/role/elb" = "1"
 
-* Downloaded iampolicy.json file in our EKS cluster to define what is allowable and what isn’t when accessing our application. 
+### Downloaded iampolicy.json file in our EKS cluster to define what is allowable and what isn’t when accessing our application. 
 
-* Downloaded “AWSLoadBalancerControllerIAMPolicy to give permission to my cluster to use my ALB controller.
+```
+wget https://raw.githubusercontent.com/kura-labs-org/Template/main/iam_policy.json
+```
 
-* Create a service account that is used to control access to our ingress controller to interact with our ALB in our EKS cluster.
+### Downloaded “AWSLoadBalancerControllerIAMPolicy" to give permission to the cluster to use my ALB controller.
 
-* Created certificate manager to secure the traffic from clients and associated ingress (incoming traffic) controller with the associated domain name that will be created to access our application through the load balancer.
+`aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
 
-* List of polocies under the AWSLoadBalancerControllerRole on our worker nodes (2 instances configured to spin back up if ever terminated:
+### Create a service account that is used to control access to our ingress controller to interact with our ALB in our EKS cluster
+
+```
+eksctl create iamserviceaccount \
+--cluster=cluster01 \
+--namespace=kube-system \
+--name=aws-load-balancer-controller \
+--attach-policy-arn=arn:aws:iam::848991144892:policy/AWSLoadBalancerControllerIAMPolicy \
+--override-existing-serviceaccounts \
+--approve
+```
+### Created certificate manager to secure the traffic from clients and associated ingress (incoming traffic) controller with the associated domain name that will be created to access our application through the load balancer
+```
+kubectl apply \
+--validate=false \
+-f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+```
+
+### List of policies under the AWSLoadBalancerControllerRole on our worker nodes (2 instances configured to spin back up if ever terminated:
 
 **<ins> Configured ALB controller:</ins>**
 
@@ -52,27 +72,10 @@ Add the following tags to each of the public subnets  "kubernetes.io/role/elb" =
 
 
 
-Add a new tag to all the public subnets in your EKS VPC with the key being: “kubernetes.io/role/elb” and the value: “1”
 
-wget https://raw.githubusercontent.com/kura-labs-org/Template/main/iam_policy.json
 
-aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
 
-```
-eksctl create iamserviceaccount \
---cluster=cluster01 \
---namespace=kube-system \
---name=aws-load-balancer-controller \
---attach-policy-arn=arn:aws:iam::848991144892:policy/AWSLoadBalancerControllerIAMPolicy \
---override-existing-serviceaccounts \
---approve
-```
 
-```
-kubectl apply \
---validate=false \
--f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
-```
 
 wget https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.5/v2_4_5_full.yaml
 
